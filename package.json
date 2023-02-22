@@ -1,0 +1,29 @@
+{
+  "name": "battleship",
+  "version": "1.0.0",
+  "description": "Battleship game",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "build": "webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/jacobwmorris/battleship.git"
+  },
+  "keywords": [
+    "battleship"
+  ],
+  "author": "Jacob Morris",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jacobwmorris/battleship/issues"
+  },
+  "homepage": "https://github.com/jacobwmorris/battleship#readme",
+  "devDependencies": {
+    "jest": "^29.4.3",
+    "webpack": "^5.75.0",
+    "webpack-cli": "^5.0.1"
+  }
+}
