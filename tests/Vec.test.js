@@ -8,6 +8,17 @@ it("Checks if two vectors are equal", () => {
     expect(Vec.equal(a, c)).toBeFalsy()
 })
 
+it("Adds two vectors", () => {
+    const a = [1, 2]
+    const b = [2, 1]
+    expect(Vec.add(a, b)).toEqual([3, 3])
+})
+
+it("Multiplies vectors by a scalar value", () => {
+    const a = [1, 0]
+    expect(Vec.multiply(a, 5)).toEqual([5, 0])
+})
+
 it("Checks if a point is in bounds", () => {
     const posIn = [5, 5]
     const posOut1 = [-1, 5]
