@@ -1,6 +1,7 @@
 
-function Ship(name, length, direction) {
+function Ship(name, pos, length, direction) {
     this.name = name
+    this.pos = pos
     this.length = length
     this.direction = direction
     this.hits = 0;
