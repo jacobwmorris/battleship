@@ -42,7 +42,10 @@ Gameboard.prototype.receiveAttack = function(pos) {
 }
 
 Gameboard.prototype.allShipsSunk = function() {
-
+    if (this.ships.find((ship) => !ship.isSunk())) {
+        return false
+    }
+    return true
 }
 
 //Helper functions
@@ -62,7 +65,10 @@ Gameboard.prototype.shipsOverlap = function(sh1, sh2) {
 
 Gameboard.prototype.shotHits = function(pos, ship) {
     const squares = ship.getSquares()
-    return squares.find((sq) => Vec.equal(sq, pos))
+    if (squares.find((sq) => Vec.equal(sq, pos))) {
+        return true
+    }
+    return false
 }
 
 module.exports = Gameboard

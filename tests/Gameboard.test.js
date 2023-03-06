@@ -41,3 +41,15 @@ it("Doesn't accept the same attack twice", () => {
     gb.receiveAttack([4, 4])
     expect(() => gb.receiveAttack([4, 4])).toThrow("Tried to attack the same square again")
 })
+
+it("Knows when all ships are sunk", () => {
+    const gb = new Gameboard()
+    gb.place("Ship1", [0, 0], 2, [1, 0])
+    gb.place("Ship2", [0, 1], 2, [0, 1])
+    gb.receiveAttack([0, 0])
+    gb.receiveAttack([1, 0])
+    expect(gb.allShipsSunk()).toBeFalsy()
+    gb.receiveAttack([0, 1])
+    gb.receiveAttack([0, 2])
+    expect(gb.allShipsSunk()).toBeTruthy()
+})
