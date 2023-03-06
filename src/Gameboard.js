@@ -25,6 +25,27 @@ Gameboard.prototype.place = function(name, pos, length, direction) {
     this.ships.push(sh)
 }
 
+Gameboard.prototype.receiveAttack = function(pos) {
+    if (this.shots.find((shot) => Vec.equal(shot.pos, pos))) {
+        throw new Error("Tried to attack the same square again")
+    }
+
+    let hit = false
+    this.ships.forEach((s) => {
+        if (this.shotHits(pos, s)) {
+            s.hit()
+            hit = true
+        }
+    })
+    this.shots.push({pos: pos, hit: hit})
+    return hit
+}
+
+Gameboard.prototype.allShipsSunk = function() {
+
+}
+
+//Helper functions
 Gameboard.prototype.shipInBounds = function(ship) {
     const bow = ship.pos
     const stern = ship.getStern()
@@ -37,6 +58,11 @@ Gameboard.prototype.shipsOverlap = function(sh1, sh2) {
     const sh2Min = sh2.pos
     const sh2Max = sh2.getStern()
     return sh1Max[0] >= sh2Min[0] && sh1Min[0] <= sh2Max[0] && sh1Max[1] >= sh2Min[1] && sh1Min[1] <= sh2Max[1]
+}
+
+Gameboard.prototype.shotHits = function(pos, ship) {
+    const squares = ship.getSquares()
+    return squares.find((sq) => Vec.equal(sq, pos))
 }
 
 module.exports = Gameboard
