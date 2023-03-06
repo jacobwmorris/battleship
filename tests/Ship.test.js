@@ -15,7 +15,7 @@ it("Ship constructor works", () => {
 it("Takes hits", () => {
     const shPos = [1, 1]
     const shDir = [1, 0]
-    const sh = new Ship("Test ship", shPos, 5, shDir)
+    const sh = new Ship("Test ship", shPos, 2, shDir)
     sh.hit()
     expect(sh.hits).toBe(1)
     sh.hit()
@@ -25,8 +25,22 @@ it("Takes hits", () => {
 it("Is sunk if the ship has taken too many hits", () => {
     const shPos = [1, 1]
     const shDir = [1, 0]
-    const sh = new Ship("Test ship", shPos, 5, shDir)
+    const sh = new Ship("Test ship", shPos, 1, shDir)
     expect(sh.isSunk()).toBeFalsy();
     sh.hit()
     expect(sh.isSunk()).toBeTruthy();
+})
+
+it("getStern returns the opposite end of the ship", () => {
+    const shPos = [1, 1]
+    const shDir = [1, 0]
+    const sh = new Ship("Test ship", shPos, 3, shDir)
+    expect(sh.getStern()).toEqual([3, 1]);
+})
+
+it("getSquares returns all squares the ship occupies", () => {
+    const shPos = [1, 1]
+    const shDir = [1, 0]
+    const sh = new Ship("Test ship", shPos, 3, shDir)
+    expect(sh.getSquares()).toEqual([[1, 1], [2, 1], [3, 1]]);
 })
