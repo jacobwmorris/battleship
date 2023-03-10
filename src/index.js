@@ -1,4 +1,3 @@
+import "./style.css"
 
-module.exports = function() {
-    return "success!";
-};
+console.log("success")
