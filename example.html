@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Battleship</title>
+    <style>
+
+* {
+    margin: 0;
+    padding: 0;
+}
+/* Overall layout */
+#content {
+    width: 800px;
+    margin: 0 auto;
+}
+
+h1 {
+    text-align: center;
+}
+
+.mainbutton {
+    display: block;
+    padding: 4px;
+    width: 8rem;
+    margin: 1rem auto;
+}
+
+.nodisplay {
+    display: none;
+}
+
+/* New game form */
+#ng-form {
+    border: 2px solid gray;
+}
+
+#ng-form ul {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    list-style-type: none;
+}
+
+label {
+    display: inline-block;
+    margin: 1rem 0;
+}
+
+#start {
+    display: block;
+    padding: 4px;
+    margin: 1rem;
+}
+
+/* Layout for gameboards */
+#battleship {
+    display: flex;
+    justify-content: space-between;
+}
+
+.boardwrapper {
+    width: 264px;
+    height: 264px;
+    flex: none;
+}
+
+/* Player titles */
+.playername {
+    text-decoration: underline;
+    text-align: center;
+}
+
+.p1name {
+    color: red;
+}
+
+.p2name {
+    color: blue;
+}
+
+/* Gameboard */
+.gameboard {
+    margin: 24px 0 0 24px;
+}
+
+.gameboard, .coordinates, .boardsquares, .hitmarks, .targetbuttons {
+    position: relative;
+}
+
+.coordinates > div, .boardsquares > div, .hitmarks > div, .targetbuttons > button {
+    width: 24px;
+    height: 24px;
+    position: absolute;
+}
+
+.coord {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 1rem;
+    text-align: center;
+    padding: 0.2rem 0;
+}
+
+.watersquare {
+    background-color: #0069ff
+}
+
+.watersquare-dark {
+    background-color: #0052c8;
+}
+
+.shipsquare {
+    background-color: #c4c4c4;
+}
+
+.markhit, .markmiss {
+    background-color: transparent;
+}
+
+.markhit {
+    background-image: url("./images/x-hit.svg");
+}
+
+.markmiss {
+    background-image: url("./images/x-miss.svg");
+}
+
+.target {
+    border: 0;
+    background-color: transparent;
+}
+
+.target:not(.used):hover {
+    background-image: url("./images/crosshair.svg");
+}
+
+/* Message section */
+#messages {
+    overflow: scroll;
+    width: 50%;
+    height: 10rem;
+    margin: 0 auto;
+    border: 2px solid gray;
+}
+
+.p1message {
+    color: red;
+}
+
+.p2message {
+    color: blue;
+}
+
+    </style>
+</head>
+<body>
+<div id="content">
+
+<h1>Battleship</h1>
+<button class="mainbutton" id="newgame">New Game</button>
+<div id="ng-form">
+    <form action="#">
+        <ul>
+            <li>
+                <label for="ng-mode">Game mode:</label>
+                <select name="mode" id="ng-mode">
+                    <option value="pvc">Singleplayer (Player 2 is computer)</option>
+                    <option value="pvp">Multiplayer</option>
+                </select>
+            </li>
+            <li>
+                <label for="ng-p1name">Player 1's name:</label>
+                <input name="p1name" id="ng-p1name" maxlength="30" type="text">
+            </li>
+            <li>
+                <label for="ng-p2name">Player 2's name:</label>
+                <input name="p2name" id="ng-p2name" maxlength="30" type="text">
+            </li>
+            <li><button id="start">Start</button></li>
+        </ul>
+    </form>
+</div>
+
+<div id="battleship">
+    <div class="boardwrapper">
+        <h2 class="playername p1name">Player 1</h2>
+        <div class="gameboard">
+            <div class="coordinates">
+                <div class="coord" style="left:0px;top:-24px;">A</div>
+                <div class="coord" style="left:24px;top:-24px;">B</div>
+                <div class="coord" style="left:48px;top:-24px;">C</div>
+                <div class="coord" style="left:-24px;top:0px;">1</div>
+                <div class="coord" style="left:-24px;top:24px;">2</div>
+                <div class="coord" style="left:-24px;top:48px;">3</div>
+            </div>
+            <div class="boardsquares">
+                <div class="watersquare" style="left: 0px; top: 0px;"></div>
+                <div class="shipsquare" style="left: 24px; top: 0px;"></div>
+                <div class="shipsquare" style="left: 48px; top: 0px;"></div>
+                <div class="watersquare" style="left: 0px; top: 24px;"></div>
+                <div class="watersquare" style="left: 24px; top: 24px;"></div>
+                <div class="watersquare" style="left: 48px; top: 24px;"></div>
+                <div class="watersquare" style="left: 0px; top: 48px;"></div>
+                <div class="watersquare" style="left: 24px; top: 48px;"></div>
+                <div class="watersquare" style="left: 48px; top: 48px;"></div>
+            </div>
+            <div class="hitmarks">
+                <div class="markhit" style="left: 24px; top: 0px;"></div>
+                <div class="markmiss" style="left: 24px; top: 24px;"></div>
+            </div>
+            <div class="targetbuttons">
+                <button class="target" style="left: 0px; top: 0px;"></button>
+                <button class="target used" style="left: 24px; top: 0px;"></button>
+                <button class="target" style="left: 48px; top: 0px;"></button>
+                <button class="target" style="left: 0px; top: 24px;"></button>
+                <button class="target used" style="left: 24px; top: 24px;"></button>
+                <button class="target" style="left: 48px; top: 24px;"></button>
+                <button class="target" style="left: 0px; top: 48px;"></button>
+                <button class="target" style="left: 24px; top: 48px;"></button>
+                <button class="target" style="left: 48px; top: 48px;"></button>
+            </div>
+        </div>
+    </div>
+
+    <div class="boardwrapper">
+        <h2 class="playername p2name">Player 2</h2>
+        <div class="gameboard">
+            <div class="coordinates">
+                <div class="coord" style="left:0px;top:-24px;">A</div>
+                <div class="coord" style="left:24px;top:-24px;">B</div>
+                <div class="coord" style="left:48px;top:-24px;">C</div>
+                <div class="coord" style="left:-24px;top:0px;">1</div>
+                <div class="coord" style="left:-24px;top:24px;">2</div>
+                <div class="coord" style="left:-24px;top:48px;">3</div>
+            </div>
+            <div class="boardsquares">
+                <div class="watersquare" style="left: 0px; top: 0px;"></div>
+                <div class="shipsquare" style="left: 24px; top: 0px;"></div>
+                <div class="shipsquare" style="left: 48px; top: 0px;"></div>
+                <div class="watersquare" style="left: 0px; top: 24px;"></div>
+                <div class="watersquare" style="left: 24px; top: 24px;"></div>
+                <div class="watersquare" style="left: 48px; top: 24px;"></div>
+                <div class="watersquare" style="left: 0px; top: 48px;"></div>
+                <div class="watersquare" style="left: 24px; top: 48px;"></div>
+                <div class="watersquare" style="left: 48px; top: 48px;"></div>
+            </div>
+            <div class="hitmarks">
+                <div class="markhit" style="left: 24px; top: 0px;"></div>
+                <div class="markmiss" style="left: 24px; top: 24px;"></div>
+            </div>
+            <div class="targetbuttons">
+                <button class="target" style="left: 0px; top: 0px;"></button>
+                <button class="target used" style="left: 24px; top: 0px;"></button>
+                <button class="target" style="left: 48px; top: 0px;"></button>
+                <button class="target" style="left: 0px; top: 24px;"></button>
+                <button class="target used" style="left: 24px; top: 24px;"></button>
+                <button class="target" style="left: 48px; top: 24px;"></button>
+                <button class="target" style="left: 0px; top: 48px;"></button>
+                <button class="target" style="left: 24px; top: 48px;"></button>
+                <button class="target" style="left: 48px; top: 48px;"></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<button class="mainbutton" id="pass">Pass</button>
+
+<div id="messages">
+    <p class="p1message">Message</p>
+    <p class="p2message">Message</p>
+    <p>Message</p>
+    <p>Message</p>
+    <p>Message</p>
+    <p>Message</p>
+    <p>Message</p>
+    <p>Message</p>
+    <p>Message</p>
+    <p>Message</p>
+</div>
+
+</div>
+
+</div>
+</body>
+</html>
