@@ -53,3 +53,10 @@ it("Knows when all ships are sunk", () => {
     gb.receiveAttack([0, 2])
     expect(gb.allShipsSunk()).toBeTruthy()
 })
+
+it("Returns all squares that have a ship on them", () => {
+    const gb = new Gameboard()
+    gb.place("Ship1", [0, 0], 2, [1, 0])
+    gb.place("Ship2", [0, 1], 2, [0, 1])
+    expect(gb.getShipSquares()).toEqual([[0, 0], [1, 0], [0, 1], [0, 2]])
+})

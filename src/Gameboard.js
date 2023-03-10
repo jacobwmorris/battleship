@@ -48,6 +48,12 @@ Gameboard.prototype.allShipsSunk = function() {
     return true
 }
 
+Gameboard.prototype.getShipSquares = function() {
+    const sq = []
+    this.ships.forEach((s) => sq.push(s.getSquares()))
+    return sq.flat(1)
+}
+
 //Helper functions
 Gameboard.prototype.shipInBounds = function(ship) {
     const bow = ship.pos
