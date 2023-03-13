@@ -8,6 +8,34 @@ function Gamedata() {
     this.player2 = new Player("Player 2 (cpu)", 2, true)
     this.board1 = new Gameboard()
     this.board2 = new Gameboard()
+    this.observers = []
+}
+
+Gamedata.prototype.setup = function(players, p1name, p2name, displayObj) {
+    this.mode = (players === 1) ? "pvc" : "pvp"
+    this.whosTurn = 1
+    this.player1.reset(p1name, 1, false)
+    this.player2.reset(p2name, 2, (players === 1) ? true : false)
+    this.board1.reset()
+    this.board2.reset()
+    displayObj.setup(this)
+    this.observers.push(displayObj)
+}
+
+Gamedata.prototype.setupTEST = function(players, p1name, p2name, displayObj) {
+    this.mode = (players === 1) ? "pvc" : "pvp"
+    this.whosTurn = 1
+    this.player1.reset(p1name, 1, false)
+    this.player2.reset(p2name, 2, (players === 1) ? true : false)
+    this.board1.reset()
+    this.board2.reset()
+
+    this.board1.place("Test ship1", [2, 2], 5, [0, 1])
+    this.board2.place("Test ship 2", [3, 5], 3, [1, 0])
+    this.board2.hidden = true
+
+    displayObj.setup(this)
+    this.observers.push(displayObj)
 }
 
 Gamedata.prototype.update = function(info) {
@@ -18,6 +46,10 @@ Gamedata.prototype.update = function(info) {
         default:
             break
     }
+}
+
+Gamedata.prototype.notifyObservers = function() {
+    this.observers.forEach((obs) => obs.update(this))
 }
 
 //Helper functions

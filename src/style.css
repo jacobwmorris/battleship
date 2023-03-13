@@ -24,6 +24,14 @@ h1 {
     display: none;
 }
 
+.redtext {
+    color: red;
+}
+
+.bluetext {
+    color: blue;
+}
+
 /* New game form */
 #ng-form {
     border: 2px solid gray;
@@ -63,14 +71,6 @@ label {
 .playername {
     text-decoration: underline;
     text-align: center;
-}
-
-.p1name {
-    color: red;
-}
-
-.p2name {
-    color: blue;
 }
 
 /* Gameboard */
@@ -135,12 +135,4 @@ label {
     height: 10rem;
     margin: 0 auto;
     border: 2px solid gray;
-}
-
-.p1message {
-    color: red;
-}
-
-.p2message {
-    color: blue;
 }

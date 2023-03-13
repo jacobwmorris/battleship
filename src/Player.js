@@ -5,6 +5,12 @@ function Player(name, num, isCpu) {
     this.isCpu = isCpu
 }
 
+Player.prototype.reset = function(name, num, isCpu) {
+    this.name = name
+    this.num = num
+    this.isCpu = isCpu
+}
+
 Player.prototype.cpuTurn = function(targetBoard) {
     return {player: this, pos: this.guessRandom(targetBoard)}
 }

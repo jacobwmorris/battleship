@@ -2,12 +2,18 @@ const Ship = require("./Ship")
 const Vec = require("./Vec")
 
 function Gameboard() {
+    this.hidden = false
     this.ships = []
     this.shots = []
 }
 
 Gameboard.prototype.width = 10
 Gameboard.prototype.height = 10
+
+Gameboard.prototype.reset = function() {
+    this.ships.splice(0, this.ships.length)
+    this.shots.splice(0, this.shots.length)
+}
 
 Gameboard.prototype.place = function(name, pos, length, direction) {
     const sh = new Ship(name, pos, length, direction)
