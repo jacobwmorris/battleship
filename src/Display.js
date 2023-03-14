@@ -34,14 +34,50 @@ Display.prototype.makePlayerName = function(pData) {
 
 Display.prototype.makeGameboard = function(boardData) {
     const board = Dom.makeElement("div", "", "gameboard")
-    //"coordinates", "boardsquares", "hitmarks", "targetbuttons"
-    //const coordinates
+    const coordinates = this.makeCoordinates(boardData)
     const boardSquares = this.makeBoardSquares(boardData)
-    //const hitMarks
+    const hitMarks = this.makeHitMarks(boardData)
     //const targetButtons
 
+    board.appendChild(coordinates)
     board.appendChild(boardSquares)
+    board.appendChild(hitMarks)
     return board
+}
+
+Display.prototype.makeCoordinates = function(boardData) {
+    const coordinates = Dom.makeElement("div", "", "coordinates")
+
+    for (let x = 0; x < boardData.width; x++) {
+        coordinates.appendChild(this.makeCoordSquare("x", x))
+    }
+    for (let y = 0; y < boardData.height; y++) {
+        coordinates.appendChild(this.makeCoordSquare("y", y))
+    }
+
+    return coordinates
+}
+
+Display.prototype.makeCoordSquare = function(axis, num) {
+    let left = 0, top = 0
+    text = (axis === "x") ? this.numToLetter(num) : (num + 1).toString()
+    if (axis === "x") {
+        left = num * this.squareSize
+        top = -this.squareSize
+    }
+    else {
+        left = -this.squareSize
+        top = num * this.squareSize
+    }
+    
+    const square = Dom.makeElement("div", text, "coord")
+    square.setAttribute("style", `left:${left}px;top:${top}px;`)
+    return square
+}
+
+Display.prototype.numToLetter = function(num) {
+    const A = "A".charCodeAt(0)
+    return String.fromCharCode(A + num)
 }
 
 Display.prototype.makeBoardSquares = function(boardData) {
@@ -75,6 +111,25 @@ Display.prototype.makeBoardSquare = function(x, y, hidden, shipSquares) {
 
     s.classList.add(isShip ? "shipsquare" : "watersquare")
     return s
+}
+
+Display.prototype.makeHitMarks = function(boardData) {
+    const hitMarks = Dom.makeElement("div", "", "hitmarks")
+
+    boardData.shots.forEach((shot) => {
+        hitMarks.appendChild(this.makeHitMark(shot.pos[0], shot.pos[1], shot.hit))
+    })
+
+    return hitMarks
+}
+
+Display.prototype.makeHitMark = function(x, y, hit) {
+    const hitMark = Dom.makeElement("div", "", hit ? "markhit" : "markmiss")
+    const left = x * this.squareSize
+    const top = y * this.squareSize
+    hitMark.setAttribute("style", `left:${left}px;top:${top}px;`)
+
+    return hitMark
 }
 
 module.exports = Display

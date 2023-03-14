@@ -33,6 +33,10 @@ Gamedata.prototype.setupTEST = function(players, p1name, p2name, displayObj) {
     this.board1.place("Test ship1", [2, 2], 5, [0, 1])
     this.board2.place("Test ship 2", [3, 5], 3, [1, 0])
     this.board2.hidden = true
+    this.board1.receiveAttack([2, 2])
+    this.board1.receiveAttack([3, 3])
+    this.board2.receiveAttack([5, 5])
+    this.board2.receiveAttack([5, 6])
 
     displayObj.setup(this)
     this.observers.push(displayObj)
