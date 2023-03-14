@@ -124,7 +124,7 @@ label {
     background-color: transparent;
 }
 
-.target:not(.used):hover {
+.enabletargets .target:not(.used):hover {
     background-image: url("../images/crosshair.svg");
 }
 

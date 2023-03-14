@@ -1,3 +1,4 @@
+const Vec = require("./Vec")
 
 function Player(name, num, isCpu) {
     this.name = name

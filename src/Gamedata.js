@@ -52,8 +52,35 @@ Gamedata.prototype.update = function(info) {
     }
 }
 
+Gamedata.prototype.finishGame = function(winner) {
+    console.log("The winner is: " + winner.name)
+}
+
 Gamedata.prototype.notifyObservers = function() {
     this.observers.forEach((obs) => obs.update(this))
+}
+
+//Create callback for target buttons
+Gamedata.prototype.getTargetCallback = function(boardNum) {
+    const data = this
+    const board = boardNum
+    const cb = function(event) {
+        if (event.target.classList.contains("used")) { //Don't allow pressing a used button again
+            return
+        }
+        if (board === data.whosTurn) { //The player cannot shoot their own board
+            return
+        }
+
+        //Player 1 shoots board 2 and vice versa
+        const player = (board === 1) ? data.player2 : data.player1
+        const pos = [Number.parseInt(event.target.getAttribute("data-x")), Number.parseInt(event.target.getAttribute("data-y"))]
+        data.update({player, pos})
+
+        event.target.classList.add("used")
+    }
+
+    return cb
 }
 
 //Helper functions
@@ -61,18 +88,34 @@ Gamedata.prototype.updatePvC = function(info) {
     let success = false
     //player 1 attacks
     if (info.player.num === 1 && this.whosTurn === 1) {
-        this.board2.receiveAttack(info.pos)
+        try {
+            this.board2.receiveAttack(info.pos)
+        }
+        catch(err) {
+            console.log(err)
+        }
         success = true
     }
     //continue if turn was successful
     if (!success)
         return
-    //check for a winner
+    //check for player 1 victory
+    if (this.board2.allShipsSunk()) {
+        this.finishGame(this.player1)
+        this.notifyObservers(this)
+        return
+    }
     //player 2 (cpu) attacks
     const cpuMove = this.player2.cpuTurn(this.board1)
     this.board1.receiveAttack(cpuMove.pos)
-    //check for a winner
+    //check for player 2 victory
+    if (this.board1.allShipsSunk()) {
+        this.finishGame(this.player2)
+        this.notifyObservers(this)
+        return
+    }
     //redraw board
+    this.notifyObservers(this)
 }
 
 Gamedata.prototype.updatePvP = function(info) {
