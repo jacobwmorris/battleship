@@ -9,9 +9,10 @@ function Gamedata() {
     this.board1 = new Gameboard()
     this.board2 = new Gameboard()
     this.observers = []
+    this.messages = null
 }
 
-Gamedata.prototype.setup = function(players, p1name, p2name, displayObj) {
+Gamedata.prototype.setup = function(players, p1name, p2name, displayObj, messageObj) {
     this.mode = (players === 1) ? "pvc" : "pvp"
     this.whosTurn = 1
     this.player1.reset(p1name, 1, false)
@@ -20,9 +21,10 @@ Gamedata.prototype.setup = function(players, p1name, p2name, displayObj) {
     this.board2.reset()
     displayObj.setup(this)
     this.observers.push(displayObj)
+    this.messages = messageObj
 }
 
-Gamedata.prototype.setupTEST = function(players, p1name, p2name, displayObj) {
+Gamedata.prototype.setupTEST = function(players, p1name, p2name, displayObj, messageObj) {
     this.mode = (players === 1) ? "pvc" : "pvp"
     this.whosTurn = 1
     this.player1.reset(p1name, 1, false)
@@ -40,6 +42,7 @@ Gamedata.prototype.setupTEST = function(players, p1name, p2name, displayObj) {
 
     displayObj.setup(this)
     this.observers.push(displayObj)
+    this.messages = messageObj
 }
 
 Gamedata.prototype.update = function(info) {
