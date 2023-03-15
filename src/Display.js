@@ -1,5 +1,6 @@
 const Dom = require("./DomFuncs")
 const Vec = require("./Vec")
+const Misc = require("./MiscFuncs")
 
 function Display(element, squareSize) {
     this.element = element
@@ -75,7 +76,7 @@ Display.prototype.makeCoordinates = function(boardData) {
 
 Display.prototype.makeCoordSquare = function(axis, num) {
     let left = 0, top = 0
-    text = (axis === "x") ? this.numToLetter(num) : (num + 1).toString()
+    text = (axis === "x") ? Misc.numToLetter(num) : (num + 1).toString()
     if (axis === "x") {
         left = num * this.squareSize
         top = -this.squareSize
@@ -164,11 +165,6 @@ Display.prototype.makeTargetButton = function(x, y, boardCb) {
     button.addEventListener("click", boardCb)
 
     return button
-}
-
-Display.prototype.numToLetter = function(num) {
-    const A = "A".charCodeAt(0)
-    return String.fromCharCode(A + num)
 }
 
 Display.prototype.setTargetsEnabled = function(gameData) {
