@@ -1,5 +1,6 @@
 const Gameboard = require("./Gameboard")
 const Player = require("./Player")
+const Misc = require("./MiscFuncs")
 
 function Gamedata() {
     this.mode = "pvc"
@@ -50,13 +51,19 @@ Gamedata.prototype.update = function(info) {
         case "pvc":
             this.updatePvC(info)
             break
+        case "gameover":
+            break
         default:
             break
     }
 }
 
 Gamedata.prototype.finishGame = function(winner) {
-    console.log("The winner is: " + winner.name)
+    const loser = (winner.num === 1) ? this.player2 : this.player1
+    this.messages.receiveMessage(`All of ${loser.name}'s ships are sunk. ${this.getRandomConsolation()}`)
+    this.messages.receiveMessage(`The winner is ${winner.name}!`, winner.num)
+    this.notifyObservers(this)
+    this.mode = "gameover"
 }
 
 Gamedata.prototype.notifyObservers = function() {
@@ -90,35 +97,68 @@ Gamedata.prototype.getTargetCallback = function(boardNum) {
 Gamedata.prototype.updatePvC = function(info) {
     let success = false
     //player 1 attacks
-    if (info.player.num === 1 && this.whosTurn === 1) {
-        try {
-            this.board2.receiveAttack(info.pos)
-        }
-        catch(err) {
-            console.log(err)
-        }
-        success = true
-    }
+    success = this.doPlayerAttack(1, info)
     //continue if turn was successful
     if (!success)
         return
     //check for player 1 victory
     if (this.board2.allShipsSunk()) {
         this.finishGame(this.player1)
-        this.notifyObservers(this)
         return
     }
     //player 2 (cpu) attacks
-    const cpuMove = this.player2.cpuTurn(this.board1)
-    this.board1.receiveAttack(cpuMove.pos)
+    this.doCpuAttack()
+    /* const cpuMove = this.player2.cpuTurn(this.board1)
+    this.board1.receiveAttack(cpuMove.pos) */
     //check for player 2 victory
     if (this.board1.allShipsSunk()) {
         this.finishGame(this.player2)
-        this.notifyObservers(this)
         return
     }
     //redraw board
     this.notifyObservers(this)
+}
+
+Gamedata.prototype.doPlayerAttack = function(turn, info) {
+    let success = false
+    const receivingBoard = (turn === 1) ? this.board2 : this.board1
+
+    if (info.player.num === turn && this.whosTurn === turn) {
+        let hit
+
+        try {
+            hit = receivingBoard.receiveAttack(info.pos)
+        }
+        catch(err) {
+            this.messages.receiveMessage("Error:" + err.message)
+            return success
+        }
+        this.messages.receiveMessage(
+            `${info.player.name} fires on square (${Misc.numToLetter(info.pos[0])}, ${info.pos[1] + 1}).  The shot ${hit ? "hits!" : "misses."}`,
+            info.player.num
+            )
+        success = true
+    }
+
+    return success
+}
+
+Gamedata.prototype.doCpuAttack = function() {
+    let hit
+    const cpuMove = this.player2.cpuTurn(this.board1)
+
+    try {
+        hit = this.board1.receiveAttack(cpuMove.pos)
+    }
+    catch(err) {
+        this.messages.receiveMessage("Error:" + err.message)
+        return
+    }
+
+    this.messages.receiveMessage(
+        `${cpuMove.player.name} fires on square (${Misc.numToLetter(cpuMove.pos[0])}, ${cpuMove.pos[1] + 1}).  The shot ${hit ? "hits!" : "misses."}`,
+        cpuMove.player.num
+        )
 }
 
 Gamedata.prototype.updatePvP = function(info) {
@@ -144,6 +184,14 @@ Gamedata.prototype.updatePvP = function(info) {
         this.whosTurn = 1
     }
     //redraw board
+}
+
+Gamedata.prototype.getRandomConsolation = function() {
+    const words = ["Bummer!", "Oh, well!", "Sucks to be them!", "Better luck next time!",
+        "Gosh darn it to heck!", "Shoot!", "Too bad!", "Well, ship happens, right?",
+        "I guess you could say, their ship has sailed!", "Have fun in Davy Jone's locker!"]
+    const rand = Math.floor(Math.random() * words.length)
+    return words[rand]
 }
 
 module.exports = Gamedata
