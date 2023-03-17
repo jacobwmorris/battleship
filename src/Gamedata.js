@@ -47,15 +47,18 @@ Gamedata.prototype.setupTEST = function(players, p1name, p2name, displayObj, mes
 }
 
 Gamedata.prototype.update = function(info) {
+    let success = false
     switch(this.mode) {
         case "pvc":
-            this.updatePvC(info)
+            success = this.updatePvC(info)
             break
         case "gameover":
             break
         default:
             break
     }
+
+    return success
 }
 
 Gamedata.prototype.finishGame = function(winner) {
@@ -78,16 +81,12 @@ Gamedata.prototype.getTargetCallback = function(boardNum) {
         if (event.target.classList.contains("used")) { //Don't allow pressing a used button again
             return
         }
-        if (board === data.whosTurn) { //The player cannot shoot their own board
-            return
-        }
 
-        //Player 1 shoots board 2 and vice versa
-        const player = (board === 1) ? data.player2 : data.player1
         const pos = [Number.parseInt(event.target.getAttribute("data-x")), Number.parseInt(event.target.getAttribute("data-y"))]
-        data.update({player, pos})
+        const success = data.update({boardNum, pos})
 
-        event.target.classList.add("used")
+        if (success)
+            event.target.classList.add("used")
     }
 
     return cb
@@ -95,45 +94,48 @@ Gamedata.prototype.getTargetCallback = function(boardNum) {
 
 //Helper functions
 Gamedata.prototype.updatePvC = function(info) {
+    //Player 1 shoots board 2 and vice versa
+    const player = (info.boardNum === 1) ? this.player2 : this.player1
     let success = false
     //player 1 attacks
-    success = this.doPlayerAttack(1, info)
+    success = this.doPlayerAttack(1, player, info.pos)
     //continue if turn was successful
     if (!success)
-        return
+        return success
     //check for player 1 victory
     if (this.board2.allShipsSunk()) {
         this.finishGame(this.player1)
-        return
+        return success
     }
     //player 2 (cpu) attacks
     this.doCpuAttack()
     //check for player 2 victory
     if (this.board1.allShipsSunk()) {
         this.finishGame(this.player2)
-        return
+        return success
     }
     //redraw board
     this.notifyObservers(this)
+    return success
 }
 
-Gamedata.prototype.doPlayerAttack = function(turn, info) {
+Gamedata.prototype.doPlayerAttack = function(turn, player, pos) {
     let success = false
     const receivingBoard = (turn === 1) ? this.board2 : this.board1
 
-    if (info.player.num === turn && this.whosTurn === turn) {
+    if (player.num === turn && this.whosTurn === turn) {
         let hit
 
         try {
-            hit = receivingBoard.receiveAttack(info.pos)
+            hit = receivingBoard.receiveAttack(pos)
         }
         catch(err) {
             this.messages.receiveMessage("Error:" + err.message)
             return success
         }
         this.messages.receiveMessage(
-            `${info.player.name} fires on square (${Misc.numToLetter(info.pos[0])}, ${info.pos[1] + 1}).  The shot ${hit ? "hits!" : "misses."}`,
-            info.player.num
+            `${player.name} fires on square (${Misc.numToLetter(pos[0])}, ${pos[1] + 1}).  The shot ${hit ? "hits!" : "misses."}`,
+            player.num
             )
         success = true
     }
