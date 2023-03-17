@@ -29,3 +29,27 @@ it("Checks if a point is in bounds", () => {
     expect(Vec.inBounds(posOut1, a, b)).toBeFalsy()
     expect(Vec.inBounds(posOut2, a, b)).toBeFalsy()
 })
+
+it("rotates vectors 90 degrees to the right", () => {
+    let direction = [1, 0]
+    direction = Vec.rotateRight(direction)
+    expect(direction).toEqual([0, 1])
+    direction = Vec.rotateRight(direction)
+    expect(direction).toEqual([-1, 0])
+    direction = Vec.rotateRight(direction)
+    expect(direction).toEqual([0, -1])
+    direction = Vec.rotateRight(direction)
+    expect(direction).toEqual([1, 0])
+})
+
+it("rotates vectors 90 degrees to the left", () => {
+    let direction = [1, 0]
+    direction = Vec.rotateLeft(direction)
+    expect(direction).toEqual([0, -1])
+    direction = Vec.rotateLeft(direction)
+    expect(direction).toEqual([-1, 0])
+    direction = Vec.rotateLeft(direction)
+    expect(direction).toEqual([0, 1])
+    direction = Vec.rotateLeft(direction)
+    expect(direction).toEqual([1, 0])
+})
