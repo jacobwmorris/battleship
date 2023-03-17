@@ -108,8 +108,6 @@ Gamedata.prototype.updatePvC = function(info) {
     }
     //player 2 (cpu) attacks
     this.doCpuAttack()
-    /* const cpuMove = this.player2.cpuTurn(this.board1)
-    this.board1.receiveAttack(cpuMove.pos) */
     //check for player 2 victory
     if (this.board1.allShipsSunk()) {
         this.finishGame(this.player2)
@@ -188,8 +186,8 @@ Gamedata.prototype.updatePvP = function(info) {
 
 Gamedata.prototype.getRandomConsolation = function() {
     const words = ["Bummer!", "Oh, well!", "Sucks to be them!", "Better luck next time!",
-        "Gosh darn it to heck!", "Shoot!", "Too bad!", "Well, ship happens, right?",
-        "I guess you could say, their ship has sailed!", "Have fun in Davy Jone's locker!"]
+        "Gosh dern it to heck!", "Shoot!", "Too bad!", "Well, ship happens, right?",
+        "I guess you could say, their ship has sailed!", "Have fun in Davy Jones's locker!"]
     const rand = Math.floor(Math.random() * words.length)
     return words[rand]
 }
