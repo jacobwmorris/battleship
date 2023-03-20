@@ -29,6 +29,7 @@ Display.prototype.update = function(data) {
     hitMarks2.parentElement.replaceChild(this.makeHitMarks(data.board2), hitMarks2)
 
     this.setTargetsEnabled(data)
+    this.resetUsedButtons(data)
 }
 
 Display.prototype.makeBoardWrapper = function(pData, boardData, boardCb) {
@@ -171,6 +172,18 @@ Display.prototype.setTargetsEnabled = function(gameData) {
     const p1 = this.element.querySelector(".p1")
     const p2 = this.element.querySelector(".p2")
 
+    if (/setup/.test(gameData.mode)) {
+        if (gameData.whosTurn === 1) {
+            p1.classList.add("enabletargets")
+            p2.classList.remove("enabletargets")
+        }
+        else {
+            p1.classList.remove("enabletargets")
+            p2.classList.add("enabletargets")
+        }
+        return
+    }
+
     if (gameData.whosTurn === 1) {
         p1.classList.remove("enabletargets")
         p2.classList.add("enabletargets")
@@ -179,6 +192,15 @@ Display.prototype.setTargetsEnabled = function(gameData) {
         p1.classList.add("enabletargets")
         p2.classList.remove("enabletargets")
     }
+}
+
+Display.prototype.resetUsedButtons = function(gameData) {
+    if (!gameData.resetButtons)
+        return
+    
+    const buttons = document.querySelectorAll(".target")
+    buttons.forEach((b) => b.classList.remove("used"))
+    gameData.resetbuttons = false
 }
 
 module.exports = Display

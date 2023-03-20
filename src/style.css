@@ -136,3 +136,13 @@ label {
     margin: 0 auto;
     border: 2px solid gray;
 }
+
+/* Ship placement */
+.followmouse {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    height: 24px;
+    width: 24px;
+    background-color: #c4c4c4;
+    pointer-events: none;
+}

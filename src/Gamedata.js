@@ -1,9 +1,11 @@
 const Gameboard = require("./Gameboard")
 const Player = require("./Player")
+const ShipPlacer = require("./ShipPlacer")
 const Misc = require("./MiscFuncs")
 
 function Gamedata() {
     this.mode = "pvc"
+    this.resetButtons = false
     this.whosTurn = 1
     this.player1 = new Player("Player 1", 1, false)
     this.player2 = new Player("Player 2 (cpu)", 2, true)
@@ -11,10 +13,11 @@ function Gamedata() {
     this.board2 = new Gameboard()
     this.observers = []
     this.messages = null
+    this.shipPlacer = new ShipPlacer()
 }
 
 Gamedata.prototype.setup = function(players, p1name, p2name, displayObj, messageObj) {
-    this.mode = (players === 1) ? "pvc" : "pvp"
+    this.mode = (players === 1) ? "pvc-setup" : "pvp-setup"
     this.whosTurn = 1
     this.player1.reset(p1name, 1, false)
     this.player2.reset(p2name, 2, (players === 1) ? true : false)
@@ -23,17 +26,19 @@ Gamedata.prototype.setup = function(players, p1name, p2name, displayObj, message
     displayObj.setup(this)
     this.observers.push(displayObj)
     this.messages = messageObj
+    this.shipPlacer.reset()
+    this.shipPlacer.placeNext()
 }
 
 Gamedata.prototype.setupTEST = function(players, p1name, p2name, displayObj, messageObj) {
-    this.mode = (players === 1) ? "pvc" : "pvp"
+    this.mode = (players === 1) ? "pvc-setup" : "pvp-setup"
     this.whosTurn = 1
     this.player1.reset(p1name, 1, false)
     this.player2.reset(p2name, 2, (players === 1) ? true : false)
     this.board1.reset()
     this.board2.reset()
 
-    this.board1.place("Test ship1", [2, 2], 5, [0, 1])
+    this.board1.place("Test ship 1", [2, 2], 5, [0, 1])
     this.board2.place("Test ship 2", [3, 5], 3, [1, 0])
     this.board2.hidden = true
     this.board1.receiveAttack([2, 2])
@@ -44,11 +49,16 @@ Gamedata.prototype.setupTEST = function(players, p1name, p2name, displayObj, mes
     displayObj.setup(this)
     this.observers.push(displayObj)
     this.messages = messageObj
+    this.shipPlacer.reset()
+    this.shipPlacer.placeNext()
 }
 
 Gamedata.prototype.update = function(info) {
     let success = false
     switch(this.mode) {
+        case "pvc-setup":
+            success = this.updatePvCSetup(info)
+            break
         case "pvc":
             success = this.updatePvC(info)
             break
@@ -93,6 +103,53 @@ Gamedata.prototype.getTargetCallback = function(boardNum) {
 }
 
 //Helper functions
+Gamedata.prototype.updatePvCSetup = function(info) {
+    //Each player places on their own board
+    const player = (info.boardNum === 1) ? this.player1 : this.player2
+    const board = (info.boardNum === 1) ? this.board1 : this.board2
+    let success = false
+    //Place ship for the current player, using the info
+    if (player.num === this.whosTurn) {
+        const ship = this.shipPlacer.ship
+
+        try {
+            board.place(ship.name, info.pos, ship.length, ship.direction)
+        }
+        catch (err) {
+            this.messages.receiveMessage("Error: " + err.message)
+            return success
+        }
+        success = true
+    }
+    //Only continue if the ship was actually placed
+    if (!success)
+        return success
+    //Start the next place
+    this.shipPlacer.endPlace()
+    //if shipPlacer.next > 5: if whosTurn = 1: next player, if whosTurn = 2: done
+    if (this.shipPlacer.next >= 5) {
+        if (this.whosTurn === 1) {
+            this.whosTurn = 2
+            this.shipPlacer.reset()
+        }
+        else {
+            this.whosTurn = 1
+            this.resetButtons = true
+            this.mode = "pvc" //Both players have placed all ships, done setting up
+            this.notifyObservers(this)
+            return success
+        }
+    }
+    //Get the next ship to place
+    this.shipPlacer.placeNext()
+    //Redraw board
+    this.notifyObservers(this)
+}
+
+Gamedata.prototype.doPlayerPlace = function(turn, player, pos) {
+
+}
+
 Gamedata.prototype.updatePvC = function(info) {
     //Player 1 shoots board 2 and vice versa
     const player = (info.boardNum === 1) ? this.player2 : this.player1
