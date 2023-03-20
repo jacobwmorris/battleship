@@ -93,9 +93,9 @@ Gamedata.prototype.getTargetCallback = function(boardNum) {
         }
 
         const pos = [Number.parseInt(event.target.getAttribute("data-x")), Number.parseInt(event.target.getAttribute("data-y"))]
-        const success = data.update({boardNum, pos})
+        const useButton = data.update({boardNum, pos})
 
-        if (success)
+        if (useButton)
             event.target.classList.add("used")
     }
 
@@ -117,13 +117,12 @@ Gamedata.prototype.updatePvCSetup = function(info) {
         }
         catch (err) {
             this.messages.receiveMessage("Error: " + err.message)
-            return success
         }
         success = true
     }
     //Only continue if the ship was actually placed
     if (!success)
-        return success
+        return false
     //Start the next place
     this.shipPlacer.endPlace()
     //if shipPlacer.next > 5: if whosTurn = 1: next player, if whosTurn = 2: done
@@ -134,16 +133,16 @@ Gamedata.prototype.updatePvCSetup = function(info) {
         }
         else {
             this.whosTurn = 1
-            this.resetButtons = true
-            this.mode = "pvc" //Both players have placed all ships, done setting up
+            this.mode = "pvc"
             this.notifyObservers(this)
-            return success
+            return false //Both players have placed all ships, done setting up
         }
     }
     //Get the next ship to place
     this.shipPlacer.placeNext()
     //Redraw board
     this.notifyObservers(this)
+    return false
 }
 
 Gamedata.prototype.doPlayerPlace = function(turn, player, pos) {
