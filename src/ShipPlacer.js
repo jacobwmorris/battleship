@@ -1,10 +1,10 @@
 const Ship = require("./Ship")
-const Dom = require("./DomFuncs")
 
 function ShipPlacer() {
     this.placing = false
     this.next = 0
     this.ship = this.shipList[0]
+    this.observers = []
 }
 
 ShipPlacer.prototype.shipList = [
@@ -28,7 +28,7 @@ ShipPlacer.prototype.placeNext = function() {
     this.placing = true
     this.ship = this.shipList[this.next]
     this.next += 1
-    this.setupPlacer()
+    this.notifyObservers({setup: true})
 }
 
 ShipPlacer.prototype.endPlace = function() {
@@ -36,7 +36,7 @@ ShipPlacer.prototype.endPlace = function() {
         return
     
     this.placing = false
-    this.destroyPlacer()
+    this.notifyObservers({destroy: true})
 }
 
 ShipPlacer.prototype.rotateRight = function() {
@@ -47,30 +47,12 @@ ShipPlacer.prototype.rotateLeft = function() {
     this.ship.direction = Vec.rotateLeft(this.ship.direction)
 }
 
-/* Helpers */
-ShipPlacer.prototype.setupPlacer = function() {
-    const root = document.querySelector("body")
-    console.log(root)
-    const placer = Dom.makeElement("div", "test", "followmouse")
-
-    root.addEventListener("mousemove", this.followMouseCb)
-    root.appendChild(placer)
+ShipPlacer.prototype.registerCursor = function(cursor) {
+    this.observers.push(cursor)
 }
 
-ShipPlacer.prototype.destroyPlacer = function() {
-    const root = document.querySelector("body")
-    const placer = document.querySelector(".followmouse")
-
-    root.removeEventListener("mousemove", this.followMouseCb)
-    root.removeChild(placer)
-}
-
-ShipPlacer.prototype.followMouseCb = function(event) {
-    const follower = document.querySelector(".followmouse")
-    const left = event.pageX + "px"
-    const top = event.pageY + "px"
-    follower.style.left = left
-    follower.style.top = top
+ShipPlacer.prototype.notifyObservers = function(data) {
+    this.observers.forEach((o) => o.update(data))
 }
 
 module.exports = ShipPlacer

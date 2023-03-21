@@ -16,9 +16,15 @@ const mockMessages = {
     }
 }
 
+const mockCursor = {
+    update: function(data) {
+        console.log("placing cursor updated")
+    }
+}
+
 it("Does a player move, followed by a computer move", () => {
     const g = new Gamedata()
-    g.setup(1, "p1", "p2", mockDisplay, mockMessages)
+    g.setup(1, "p1", "p2", mockDisplay, mockMessages, mockCursor)
     g.board1.place("test ship", [0, 0], 2, [1, 0])
     g.board2.place("test ship", [0, 0], 2, [1, 0])
     g.update({boardNum: 2, pos: [0, 0]})
