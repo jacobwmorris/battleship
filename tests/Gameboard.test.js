@@ -60,3 +60,10 @@ it("Returns all squares that have a ship on them", () => {
     gb.place("Ship2", [0, 1], 2, [0, 1])
     expect(gb.getShipSquares()).toEqual([[0, 0], [1, 0], [0, 1], [0, 2]])
 })
+
+it("Random placement quits after too many attempts", () => {
+    const gb = new Gameboard()
+    const success = gb.placeRandom("Ship", 2, 5, () => {return {pos: [0, 0], direction: [-1, 0]}})
+    expect(success).toBeFalsy()
+    expect(gb.ships.length).toBe(0)
+})

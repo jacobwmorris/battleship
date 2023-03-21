@@ -27,8 +27,8 @@ it("Does a player move, followed by a computer move", () => {
     g.setup(1, "p1", "p2", mockDisplay, mockMessages, mockCursor)
     g.board1.place("test ship", [0, 0], 2, [1, 0])
     g.board2.place("test ship", [0, 0], 2, [1, 0])
-    g.update({boardNum: 2, pos: [0, 0]})
     g.mode = "pvc"
+    g.update({boardNum: 2, pos: [0, 0]})
     expect(g.board1.shots.length).toBe(1)
     expect(g.board2.shots.length).toBe(1)
 })

@@ -31,6 +31,26 @@ Gameboard.prototype.place = function(name, pos, length, direction) {
     this.ships.push(sh)
 }
 
+Gameboard.prototype.placeRandom = function(name, length, maxAttempts, randFunc) {
+    randFunc = !randFunc ? this.getRandShipPosition : randFunc
+    let randPos = randFunc()
+    let success = false
+
+    for (let a = 0; a < maxAttempts; a++) {
+        try {
+            this.place(name, randPos.pos, length, randPos.direction)
+        }
+        catch (err) {
+            randPos = randFunc()
+            continue
+        }
+        success = true
+        break
+    }
+
+    return success
+}
+
 Gameboard.prototype.receiveAttack = function(pos) {
     if (this.shots.find((shot) => Vec.equal(shot.pos, pos))) {
         throw new Error("Tried to attack the same square again")
@@ -81,6 +101,13 @@ Gameboard.prototype.shotHits = function(pos, ship) {
         return true
     }
     return false
+}
+
+Gameboard.prototype.getRandShipPosition = function() {
+    const randX = Math.floor(Math.random() * 10)
+    const randY = Math.floor(Math.random() * 10)
+    const randDir = [[1, 0], [0, 1], [-1, 0], [0, -1]][Math.floor(Math.random() * 4)]
+    return {pos: [randX, randY], direction: randDir}
 }
 
 module.exports = Gameboard
