@@ -17,6 +17,10 @@ const mockMessages = {
 }
 
 const mockCursor = {
+    setupRotationCb: function(cursorObj) {
+        return
+    },
+
     update: function(data) {
         console.log("placing cursor updated")
     }

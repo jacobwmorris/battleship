@@ -1,4 +1,5 @@
 const Ship = require("./Ship")
+const Vec = require("./Vec")
 
 function ShipPlacer() {
     this.placing = false
@@ -28,7 +29,7 @@ ShipPlacer.prototype.placeNext = function() {
     this.placing = true
     this.ship = this.shipList[this.next]
     this.next += 1
-    this.notifyObservers({setup: true})
+    this.notifyObservers({setup: true, length: this.ship.length, direction: this.ship.direction})
 }
 
 ShipPlacer.prototype.endPlace = function() {
@@ -41,6 +42,7 @@ ShipPlacer.prototype.endPlace = function() {
 
 ShipPlacer.prototype.rotateRight = function() {
     this.ship.direction = Vec.rotateRight(this.ship.direction)
+    this.notifyObservers({length: this.ship.length, direction: this.ship.direction})
 }
 
 ShipPlacer.prototype.rotateLeft = function() {
@@ -48,6 +50,7 @@ ShipPlacer.prototype.rotateLeft = function() {
 }
 
 ShipPlacer.prototype.registerCursor = function(cursor) {
+    cursor.setupRotationCb(this)
     this.observers.push(cursor)
 }
 

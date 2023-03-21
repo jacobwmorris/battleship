@@ -16,7 +16,7 @@ function Gamedata() {
     this.shipPlacer = new ShipPlacer()
 }
 
-Gamedata.prototype.setup = function(players, p1name, p2name, displayObj, messageObj) {
+Gamedata.prototype.setup = function(players, p1name, p2name, displayObj, messageObj, cursorObj) {
     this.mode = (players === 1) ? "pvc-setup" : "pvp-setup"
     this.whosTurn = 1
     this.player1.reset(p1name, 1, false)
@@ -26,11 +26,11 @@ Gamedata.prototype.setup = function(players, p1name, p2name, displayObj, message
     displayObj.setup(this)
     this.observers.push(displayObj)
     this.messages = messageObj
-    this.shipPlacer.reset()
-    this.shipPlacer.placeNext()
+    this.shipPlacer.registerCursor(cursorObj)
+    this.beginShipPlacement()
 }
 
-Gamedata.prototype.setupTEST = function(players, p1name, p2name, displayObj, messageObj) {
+Gamedata.prototype.setupTEST = function(players, p1name, p2name, displayObj, messageObj, cursorObj) {
     this.mode = (players === 1) ? "pvc-setup" : "pvp-setup"
     this.whosTurn = 1
     this.player1.reset(p1name, 1, false)
@@ -40,7 +40,7 @@ Gamedata.prototype.setupTEST = function(players, p1name, p2name, displayObj, mes
 
     this.board1.place("Test ship 1", [2, 2], 5, [0, 1])
     this.board2.place("Test ship 2", [3, 5], 3, [1, 0])
-    this.board2.hidden = true
+    //this.board2.hidden = true
     this.board1.receiveAttack([2, 2])
     this.board1.receiveAttack([3, 3])
     this.board2.receiveAttack([5, 5])
@@ -49,8 +49,8 @@ Gamedata.prototype.setupTEST = function(players, p1name, p2name, displayObj, mes
     displayObj.setup(this)
     this.observers.push(displayObj)
     this.messages = messageObj
-    this.shipPlacer.reset()
-    this.shipPlacer.placeNext()
+    this.shipPlacer.registerCursor(cursorObj)
+    this.beginShipPlacement()
 }
 
 Gamedata.prototype.update = function(info) {
@@ -79,14 +79,13 @@ Gamedata.prototype.finishGame = function(winner) {
     this.mode = "gameover"
 }
 
-Gamedata.prototype.notifyObservers = function() {
-    this.observers.forEach((obs) => obs.update(this))
+Gamedata.prototype.notifyObservers = function(data) {
+    this.observers.forEach((o) => o.update(data))
 }
 
 //Create callback for target buttons
 Gamedata.prototype.getTargetCallback = function(boardNum) {
     const data = this
-    const board = boardNum
     const cb = function(event) {
         if (event.target.classList.contains("used")) { //Don't allow pressing a used button again
             return
@@ -103,50 +102,68 @@ Gamedata.prototype.getTargetCallback = function(boardNum) {
 }
 
 //Helper functions
+//For single player
 Gamedata.prototype.updatePvCSetup = function(info) {
     //Each player places on their own board
     const player = (info.boardNum === 1) ? this.player1 : this.player2
-    const board = (info.boardNum === 1) ? this.board1 : this.board2
     let success = false
     //Place ship for the current player, using the info
-    if (player.num === this.whosTurn) {
-        const ship = this.shipPlacer.ship
-
-        try {
-            board.place(ship.name, info.pos, ship.length, ship.direction)
-        }
-        catch (err) {
-            this.messages.receiveMessage("Error: " + err.message)
-        }
-        success = true
-    }
+    success = this.doPlayerPlace(player, info.pos)
     //Only continue if the ship was actually placed
     if (!success)
         return false
     //Start the next place
     this.shipPlacer.endPlace()
-    //if shipPlacer.next > 5: if whosTurn = 1: next player, if whosTurn = 2: done
-    if (this.shipPlacer.next >= 5) {
-        if (this.whosTurn === 1) {
-            this.whosTurn = 2
-            this.shipPlacer.reset()
-        }
-        else {
-            this.whosTurn = 1
-            this.mode = "pvc"
-            this.notifyObservers(this)
-            return false //Both players have placed all ships, done setting up
-        }
+    //if shipPlacer.next > 5: if whosTurn = 1: place cpu ships, then done
+    if (this.shipPlacer.next >= 5 && this.whosTurn === 1) {
+        this.doCpuPlace()
+        this.messages.receiveMessage("Setup is complete.  Let the game begin!")
+        this.notifyObservers(this)
+        this.mode = "pvc"
+        return false
     }
     //Get the next ship to place
     this.shipPlacer.placeNext()
-    //Redraw board
+    this.messages.receiveMessage(`${player.name}, place your ${this.shipPlacer.ship.name}.`, player.num)
+    //Redraw boards
     this.notifyObservers(this)
     return false
 }
 
-Gamedata.prototype.doPlayerPlace = function(turn, player, pos) {
+Gamedata.prototype.doPlayerPlace = function(player, pos) {
+    let success = false
+    const receivingBoard = (player.num === 1) ? this.board1 : this.board2
 
+    if (player.num === this.whosTurn) {
+        const ship = this.shipPlacer.ship
+
+        try {
+            receivingBoard.place(ship.name, pos, ship.length, ship.direction)
+        }
+        catch (err) {
+            this.messages.receiveMessage("Error: " + err.message)
+            return success
+        }
+        success = true
+    }
+
+    return success
+}
+
+Gamedata.prototype.doCpuPlace = function() {
+    let success = true
+    success = success && this.board2.placeRandom("carrier", 5, 50)
+    success = success && this.board2.placeRandom("battleship", 4, 50)
+    success = success && this.board2.placeRandom("cruiser", 3, 50)
+    success = success && this.board2.placeRandom("submarine", 3, 50)
+    success = success && this.board2.placeRandom("destroyer", 2, 50)
+
+    if (success) {
+        this.messages.receiveMessage(`${this.player2.name} has placed their ships.`, this.player2.num)
+    }
+    else {
+        this.messages.receiveMessage(`Note: ${player2.name} was unable to place all of their ships.`)
+    }
 }
 
 Gamedata.prototype.updatePvC = function(info) {
@@ -158,6 +175,7 @@ Gamedata.prototype.updatePvC = function(info) {
     //continue if turn was successful
     if (!success)
         return success
+    
     //check for player 1 victory
     if (this.board2.allShipsSunk()) {
         this.finishGame(this.player1)
@@ -217,6 +235,7 @@ Gamedata.prototype.doCpuAttack = function() {
         )
 }
 
+//For two player
 Gamedata.prototype.updatePvP = function(info) {
     let success = false
     //a player attacks
@@ -242,12 +261,51 @@ Gamedata.prototype.updatePvP = function(info) {
     //redraw board
 }
 
+Gamedata.prototype.updatePvPSetup = function(info) {
+    //Each player places on their own board
+    const player = (info.boardNum === 1) ? this.player1 : this.player2
+    let success = false
+    //Place ship for the current player, using the info
+    success = this.doPlayerPlace(player, info.pos)
+    //Only continue if the ship was actually placed
+    if (!success)
+        return false
+    //Start the next place
+    this.shipPlacer.endPlace()
+    //if shipPlacer.next > 5: if whosTurn = 1: next player, if whosTurn = 2: done
+    if (this.shipPlacer.next >= 5) {
+        if (this.whosTurn === 1) {
+            this.whosTurn = 2
+            this.shipPlacer.reset()
+        }
+        else {
+            this.whosTurn = 1
+            this.mode = "pvc"
+            this.notifyObservers(this)
+            return false //Both players have placed all ships, done setting up
+        }
+    }
+    //Get the next ship to place
+    this.shipPlacer.placeNext()
+    //Redraw boards
+    this.notifyObservers(this)
+    return false
+}
+
+//Other functions
 Gamedata.prototype.getRandomConsolation = function() {
     const words = ["Bummer!", "Oh, well!", "Sucks to be them!", "Better luck next time!",
         "Gosh dern it to heck!", "Shoot!", "Too bad!", "Well, ship happens, right?",
         "I guess you could say, their ship has sailed!", "Have fun in Davy Jones's locker!"]
     const rand = Math.floor(Math.random() * words.length)
     return words[rand]
+}
+
+Gamedata.prototype.beginShipPlacement = function() {
+    this.whosTurn = 1
+    this.shipPlacer.reset()
+    this.shipPlacer.placeNext()
+    this.messages.receiveMessage(`${this.player1.name}, place your ${this.shipPlacer.ship.name}.`, this.whosTurn)
 }
 
 module.exports = Gamedata

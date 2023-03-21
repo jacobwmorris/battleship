@@ -29,7 +29,9 @@ ShipPlacerCursor.prototype.update = function(data) {
     }
     if (data.destroy) {
         this.destroyPlacer()
+        return
     }
+    this.cursor.textContent = "L:" + data.length + ",R:" + data.direction
 }
 
 ShipPlacerCursor.prototype.followMouseCb = function(event) {
@@ -38,6 +40,16 @@ ShipPlacerCursor.prototype.followMouseCb = function(event) {
     const top = event.pageY + "px"
     follower.style.left = left
     follower.style.top = top
+}
+
+ShipPlacerCursor.prototype.setupRotationCb = function(placerObj) {
+    const cb = function(event) {
+        if (event.code === "KeyR" && placerObj.placing) {
+            placerObj.rotateRight()
+        }
+    }
+
+    window.addEventListener("keydown", cb)
 }
 
 module.exports = ShipPlacerCursor
