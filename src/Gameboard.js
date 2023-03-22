@@ -88,11 +88,25 @@ Gameboard.prototype.shipInBounds = function(ship) {
 }
 
 Gameboard.prototype.shipsOverlap = function(sh1, sh2) {
-    const sh1Min = sh1.pos
-    const sh1Max = sh1.getStern()
-    const sh2Min = sh2.pos
-    const sh2Max = sh2.getStern()
-    return sh1Max[0] >= sh2Min[0] && sh1Min[0] <= sh2Max[0] && sh1Max[1] >= sh2Min[1] && sh1Min[1] <= sh2Max[1]
+    let sh1Min = sh1.pos
+    let sh1Max = sh1.getStern()
+    let sh2Min = sh2.pos
+    let sh2Max = sh2.getStern()
+
+    //The stern of a ship isn't necessarily its "min" position.  Swap the values if it isn't
+    if (sh1Min[0] > sh1Max[0] || sh1Min[1] > sh1Max[1]) {
+        const swap = sh1Min
+        sh1Min = sh1Max
+        sh1Max = swap
+    }
+    if (sh2Min[0] > sh2Max[0] || sh2Min[1] > sh2Max[1]) {
+        const swap = sh2Min
+        sh2Min = sh2Max
+        sh2Max = swap
+    }
+    
+    return sh1Max[0] >= sh2Min[0] && sh1Min[0] <= sh2Max[0] &&
+        sh1Max[1] >= sh2Min[1] && sh1Min[1] <= sh2Max[1]
 }
 
 Gameboard.prototype.shotHits = function(pos, ship) {

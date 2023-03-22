@@ -23,9 +23,9 @@ it("Won't place ships out of bounds", () => {
 
 it("Won't place ships overlaping", () => {
     const gb = new Gameboard()
-    gb.place("Ship1", [0, 1], 3, [1, 0])
-    expect(() => gb.place("Ship2", [1, 0], 3, [0, 1])).toThrow("Tried to place one ship overlaping another")
-    expect(() => gb.place("Ship3", [2, 1], 3, [1, 0])).toThrow("Tried to place one ship overlaping another")
+    gb.place("Ship1", [1, 1], 2, [0, -1])
+    expect(() => gb.place("Ship2", [0, 0], 2, [1, 0])).toThrow("Tried to place one ship overlaping another")
+    expect(() => gb.place("Ship3", [1, 1], 2, [0, 1])).toThrow("Tried to place one ship overlaping another")
 })
 
 it("Receives attacks", () => {

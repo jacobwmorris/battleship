@@ -32,10 +32,16 @@ it("Is sunk if the ship has taken too many hits", () => {
 })
 
 it("getStern returns the opposite end of the ship", () => {
-    const shPos = [1, 1]
+    const shPos = [2, 2]
     const shDir = [1, 0]
     const sh = new Ship("Test ship", shPos, 3, shDir)
-    expect(sh.getStern()).toEqual([3, 1]);
+    expect(sh.getStern()).toEqual([4, 2]);
+    sh.direction = Vec.rotateRight(sh.direction)
+    expect(sh.getStern()).toEqual([2, 4]);
+    sh.direction = Vec.rotateRight(sh.direction)
+    expect(sh.getStern()).toEqual([0, 2]);
+    sh.direction = Vec.rotateRight(sh.direction)
+    expect(sh.getStern()).toEqual([2, 0]);
 })
 
 it("getSquares returns all squares the ship occupies", () => {
