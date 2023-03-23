@@ -5,13 +5,17 @@ function Messages(element) {
 }
 
 Messages.prototype.receiveMessage = function(text, player) {
+    let p
     if (!player) {
-        this.element.appendChild(Dom.makeElement("p", text))
+        p = Dom.makeElement("p", text)
+        this.element.appendChild(p)
     }
     else {
         const colorClass = (player === 1) ? "redtext" : "bluetext"
-        this.element.appendChild(Dom.makeElement("p", text, colorClass))
+        p = Dom.makeElement("p", text, colorClass)
+        this.element.appendChild(p)
     }
+    this.element.scrollTop += p.scrollHeight
 }
 
 Messages.prototype.clear = function() {

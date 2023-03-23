@@ -120,8 +120,8 @@ Gamedata.prototype.updatePvCSetup = function(info) {
     if (this.shipPlacer.next >= 5 && this.whosTurn === 1) {
         this.doCpuPlace()
         this.messages.receiveMessage("Setup is complete.  Let the game begin!")
-        this.notifyObservers(this)
         this.mode = "pvc"
+        this.notifyObservers(this)
         return false
     }
     //Get the next ship to place
@@ -164,7 +164,7 @@ Gamedata.prototype.doCpuPlace = function() {
         this.messages.receiveMessage(`${this.player2.name} has placed their ships.`, this.player2.num)
     }
     else {
-        this.messages.receiveMessage(`Note: ${player2.name} was unable to place all of their ships.`)
+        this.messages.receiveMessage(`Note: ${this.player2.name} was unable to place all of their ships.`)
     }
 }
 
