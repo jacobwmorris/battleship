@@ -20,6 +20,7 @@ ShipPlacerCursor.prototype.destroyPlacer = function() {
     const root = document.querySelector("body")
     root.removeEventListener("mousemove", this.followMouseCb)
     root.removeChild(this.cursor)
+    this.cursor = null
 }
 
 //Data needed: setup?, destroy?, length, direction

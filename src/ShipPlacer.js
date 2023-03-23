@@ -20,6 +20,7 @@ ShipPlacer.prototype.reset = function() {
     this.placing = false
     this.next = 0
     this.ship = this.shipList[0]
+    this.notifyObservers({destroy: true})
 }
 
 ShipPlacer.prototype.placeNext = function() {
@@ -51,7 +52,8 @@ ShipPlacer.prototype.rotateLeft = function() {
 
 ShipPlacer.prototype.registerCursor = function(cursor) {
     cursor.setupRotationCb(this)
-    this.observers.push(cursor)
+    if (this.observers.find((o) => cursor === o) === undefined)
+        this.observers.push(cursor)
 }
 
 ShipPlacer.prototype.notifyObservers = function(data) {

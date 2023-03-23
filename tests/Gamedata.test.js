@@ -13,6 +13,10 @@ const mockDisplay = {
 const mockMessages = {
     receiveMessage: function(text, player) {
         console.log(text)
+    },
+
+    clear: function() {
+        console.log("Messages cleared")
     }
 }
 

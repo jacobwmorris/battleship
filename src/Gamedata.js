@@ -26,6 +26,7 @@ Gamedata.prototype.setup = function(players, p1name, p2name, displayObj, message
     displayObj.setup(this)
     this.observers.push(displayObj)
     this.messages = messageObj
+    this.messages.clear()
     this.shipPlacer.registerCursor(cursorObj)
     this.beginShipPlacement()
 }
@@ -49,6 +50,7 @@ Gamedata.prototype.setupTEST = function(players, p1name, p2name, displayObj, mes
     displayObj.setup(this)
     this.observers.push(displayObj)
     this.messages = messageObj
+    this.messages.clear()
     this.shipPlacer.registerCursor(cursorObj)
     this.beginShipPlacement()
 }
