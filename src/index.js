@@ -4,8 +4,9 @@ const Messages = require("./Messages")
 const ShipPlacerCursor = require("./ShipPlacerCursor")
 import "./style.css"
 
-const display = new Display(document.getElementById("battleship"), 24)
-const cursor = new ShipPlacerCursor()
+const squareSize = 24
+const display = new Display(document.getElementById("battleship"), squareSize)
+const cursor = new ShipPlacerCursor(squareSize)
 const messages = new Messages(document.getElementById("messages"))
 const game = new Gamedata()
 

@@ -14,7 +14,7 @@ const DomFuncs = {
         if (clas) {
             if (Array.isArray(clas)) {
                 for (const c of clas) {
-                    e.classList.add(c)
+                    if (c) e.classList.add(c)
                 }
             }
             else {

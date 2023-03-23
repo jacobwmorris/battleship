@@ -53,3 +53,14 @@ it("rotates vectors 90 degrees to the left", () => {
     direction = Vec.rotateLeft(direction)
     expect(direction).toEqual([1, 0])
 })
+
+it("return directions for unit vectors", () => {
+    const right = [1, 0]
+    const down = Vec.rotateRight(right)
+    const left = Vec.rotateRight(down)
+    const up = Vec.rotateRight(left)
+    expect(Vec.getDirection(right)).toBe("r")
+    expect(Vec.getDirection(down)).toBe("d")
+    expect(Vec.getDirection(left)).toBe("l")
+    expect(Vec.getDirection(up)).toBe("u")
+})

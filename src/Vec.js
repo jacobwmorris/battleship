@@ -26,6 +26,26 @@ const Vec = {
 
     removeNegativeZero: function(v) {
         return v.map((n) => (n === -0) ? 0 : n)
+    },
+
+    getDirection: function(v) {
+        if (v[0] === 0) {
+            if (v[1] > 0) {
+                return "d"
+            }
+            if (v[1] < 0) {
+                return "u"
+            }
+        }
+        if (v[1] === 0) {
+            if (v[0] > 0) {
+                return "r"
+            }
+            if (v[0] < 0) {
+                return "l"
+            }
+        }
+        return "unknown"
     }
 }
 

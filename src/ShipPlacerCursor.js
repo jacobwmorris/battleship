@@ -1,12 +1,22 @@
 const Dom = require("./DomFuncs")
+const Vec = require("./Vec")
 
-function ShipPlacerCursor() {
+function ShipPlacerCursor(squareSize) {
     this.cursor = null
+    this.squareSize = squareSize
+    this.rotationIsSetup = false
+}
+
+ShipPlacerCursor.prototype.directionClasses = {
+    "r": "",
+    "d": "rot90",
+    "l": "rot180",
+    "u": "rot270"
 }
 
 ShipPlacerCursor.prototype.setupPlacer = function() { 
     const root = document.querySelector("body")
-    this.cursor = Dom.makeElement("div", "test", "followmouse")
+    this.cursor = Dom.makeElement("div", "", "followmouse")
 
     root.addEventListener("mousemove", this.followMouseCb)
     root.appendChild(this.cursor)
@@ -32,7 +42,13 @@ ShipPlacerCursor.prototype.update = function(data) {
         this.destroyPlacer()
         return
     }
-    this.cursor.textContent = "L:" + data.length + ",R:" + data.direction
+
+    Dom.clearChildren(this.cursor)
+    const ship = Dom.makeElement("div", "", ["ship-placer", this.directionClasses[Vec.getDirection(data.direction)]])
+    const tOrigin = (this.squareSize / 2) + "px"
+    ship.setAttribute("style", `height:${this.squareSize}px;width:${this.squareSize * data.length}px;transform-origin:${tOrigin} ${tOrigin};`)
+    this.cursor.appendChild(ship)
+    //this.cursor.textContent = "L:" + data.length + ",R:" + data.direction
 }
 
 ShipPlacerCursor.prototype.followMouseCb = function(event) {
@@ -44,6 +60,9 @@ ShipPlacerCursor.prototype.followMouseCb = function(event) {
 }
 
 ShipPlacerCursor.prototype.setupRotationCb = function(placerObj) {
+    if (this.rotationIsSetup)
+        return
+    
     const cb = function(event) {
         if (event.code === "KeyR" && placerObj.placing) {
             placerObj.rotateRight()
@@ -51,6 +70,7 @@ ShipPlacerCursor.prototype.setupRotationCb = function(placerObj) {
     }
 
     window.addEventListener("keydown", cb)
+    this.rotationIsSetup = true
 }
 
 module.exports = ShipPlacerCursor
