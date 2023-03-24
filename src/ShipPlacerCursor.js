@@ -48,7 +48,6 @@ ShipPlacerCursor.prototype.update = function(data) {
     const tOrigin = (this.squareSize / 2) + "px"
     ship.setAttribute("style", `height:${this.squareSize}px;width:${this.squareSize * data.length}px;transform-origin:${tOrigin} ${tOrigin};`)
     this.cursor.appendChild(ship)
-    //this.cursor.textContent = "L:" + data.length + ",R:" + data.direction
 }
 
 ShipPlacerCursor.prototype.followMouseCb = function(event) {

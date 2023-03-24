@@ -9,11 +9,10 @@ function Display(element, squareSize) {
 
 Display.prototype.setup = function(data) {
     Dom.clearChildren(this.element)
-    const p1 = this.makeBoardWrapper(data.player1, data.board1, data.getTargetCallback(1))
-    const p2 = this.makeBoardWrapper(data.player2, data.board2, data.getTargetCallback(2))
-    this.element.appendChild(p1)
-    this.element.appendChild(p2)
-
+    const main = this.makeMainArea(data)
+    const passButton = this.makePassButton(data.getPassCallback())
+    this.element.appendChild(main)
+    this.element.appendChild(passButton)
     this.setTargetsEnabled(data)
 }
 
@@ -29,7 +28,31 @@ Display.prototype.update = function(data) {
     hitMarks2.parentElement.replaceChild(this.makeHitMarks(data.board2), hitMarks2)
 
     this.setTargetsEnabled(data)
+    this.setPassText(data)
     this.resetUsedButtons(data)
+}
+
+Display.prototype.makeMainArea = function(data) {
+    const main = Dom.makeElement("div", "", "battleship-main")
+    const p1 = this.makeBoardWrapper(data.player1, data.board1, data.getTargetCallback(1))
+    const p2 = this.makeBoardWrapper(data.player2, data.board2, data.getTargetCallback(2))
+    main.appendChild(p1)
+    main.appendChild(p2)
+    return main
+}
+
+Display.prototype.makePassButton = function(passCb) {
+    const button = Dom.makeElement("button", "Pass", ["mainbutton", "passbutton"])
+    button.addEventListener("click", passCb)
+    return button
+}
+
+Display.prototype.setPassText = function(data) {
+    if (/pass/.test(data.mode)) {
+        this.element.querySelector(".passbutton").textContent = "Done passing"
+        return
+    }
+    this.element.querySelector(".passbutton").textContent = "Pass"
 }
 
 Display.prototype.makeBoardWrapper = function(pData, boardData, boardCb) {

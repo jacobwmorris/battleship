@@ -56,7 +56,7 @@ label {
 }
 
 /* Layout for gameboards */
-#battleship {
+.battleship-main {
     display: flex;
     justify-content: space-between;
 }

@@ -19,8 +19,13 @@ ShipPlacer.prototype.shipList = [
 ShipPlacer.prototype.reset = function() {
     this.placing = false
     this.next = 0
+    this.resetRotations()
     this.ship = this.shipList[0]
     this.notifyObservers({destroy: true})
+}
+
+ShipPlacer.prototype.resetRotations = function() {
+    this.shipList.forEach((s) => s.direction = [1, 0])
 }
 
 ShipPlacer.prototype.placeNext = function() {
