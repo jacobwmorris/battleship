@@ -105,7 +105,7 @@ Gamedata.prototype.notifyObservers = function(data) {
     this.observers.forEach((o) => o.update(data))
 }
 
-//Create callbacks for game buttons buttons
+//Create callbacks for game buttons
 Gamedata.prototype.getTargetCallback = function(boardNum) {
     const data = this
     const cb = function(event) {
@@ -228,19 +228,22 @@ Gamedata.prototype.doPlayerAttack = function(turn, player, pos) {
     const receivingBoard = (turn === 1) ? this.board2 : this.board1
 
     if (player.num === turn && this.whosTurn === turn) {
-        let hit
+        let result
 
         try {
-            hit = receivingBoard.receiveAttack(pos)
+            result = receivingBoard.receiveAttack(pos)
         }
         catch(err) {
             this.messages.receiveMessage("Error:" + err.message)
             return success
         }
         this.messages.receiveMessage(
-            `${player.name} fires on square (${Misc.numToLetter(pos[0])}, ${pos[1] + 1}).  The shot ${hit ? "hits!" : "misses."}`,
+            `${player.name} fires on square (${Misc.numToLetter(pos[0])}, ${pos[1] + 1}).  The shot ${result.hit ? "hits!" : "misses."}`,
             player.num
             )
+        if (result.sunk) {
+            this.messages.receiveMessage(`The oppenent's ${result.hitShip.name} is sunk!`, player.num)
+        }
         success = true
     }
 
@@ -248,11 +251,11 @@ Gamedata.prototype.doPlayerAttack = function(turn, player, pos) {
 }
 
 Gamedata.prototype.doCpuAttack = function() {
-    let hit
+    let result
     const cpuMove = this.player2.cpuTurn(this.board1)
 
     try {
-        hit = this.board1.receiveAttack(cpuMove.pos)
+        result = this.board1.receiveAttack(cpuMove.pos)
     }
     catch(err) {
         this.messages.receiveMessage("Error:" + err.message)
@@ -260,9 +263,12 @@ Gamedata.prototype.doCpuAttack = function() {
     }
 
     this.messages.receiveMessage(
-        `${cpuMove.player.name} fires on square (${Misc.numToLetter(cpuMove.pos[0])}, ${cpuMove.pos[1] + 1}).  The shot ${hit ? "hits!" : "misses."}`,
+        `${cpuMove.player.name} fires on square (${Misc.numToLetter(cpuMove.pos[0])}, ${cpuMove.pos[1] + 1}).  The shot ${result.hit ? "hits!" : "misses."}`,
         cpuMove.player.num
         )
+    if (result.sunk) {
+        this.messages.receiveMessage(`The oppenent's ${result.hitShip.name} is sunk!`, cpuMove.player.num)
+    }
 }
 
 //For two player

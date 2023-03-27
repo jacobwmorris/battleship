@@ -51,20 +51,25 @@ Gameboard.prototype.placeRandom = function(name, length, maxAttempts, randFunc) 
     return success
 }
 
+// Return object: hit is true if the shot hit,
+// hitShip is the ship that was hit (null if no ship was hit),
+// sunk is if the hit ship was sunk
 Gameboard.prototype.receiveAttack = function(pos) {
     if (this.shots.find((shot) => Vec.equal(shot.pos, pos))) {
         throw new Error("Tried to attack the same square again")
     }
 
-    let hit = false
+    let result = {hit: false, hitShip: null, sunk: false}
     this.ships.forEach((s) => {
         if (this.shotHits(pos, s)) {
             s.hit()
-            hit = true
+            result.hit = true
+            result.hitShip = s
+            result.sunk = s.isSunk()
         }
     })
-    this.shots.push({pos: pos, hit: hit})
-    return hit
+    this.shots.push({pos: pos, hit: result.hit})
+    return result
 }
 
 Gameboard.prototype.allShipsSunk = function() {

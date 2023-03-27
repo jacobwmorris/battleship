@@ -31,8 +31,8 @@ it("Won't place ships overlaping", () => {
 it("Receives attacks", () => {
     const gb = new Gameboard()
     gb.place("Ship", [0, 0], 2, [1, 0])
-    expect(gb.receiveAttack([5, 5])).toBeFalsy()
-    expect(gb.receiveAttack([0, 0])).toBeTruthy()
+    expect(gb.receiveAttack([5, 5]).hit).toBeFalsy()
+    expect(gb.receiveAttack([0, 0]).hit).toBeTruthy()
     expect(gb.shots.length).toBe(2)
 })
 
