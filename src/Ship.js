@@ -16,6 +16,11 @@ Ship.prototype.isSunk = function() {
     return this.hits >= this.length;
 }
 
+// Returns true if the ship would be sunk if hit again
+Ship.prototype.wouldBeSunk = function() {
+    return (this.hits + 1) >= this.length
+}
+
 Ship.prototype.getStern = function() {
     const scaleLength = (this.length <= 0) ? 0 : this.length - 1
     return Vec.add(this.pos, Vec.multiply(this.direction, scaleLength))

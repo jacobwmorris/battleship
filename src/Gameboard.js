@@ -55,7 +55,7 @@ Gameboard.prototype.placeRandom = function(name, length, maxAttempts, randFunc) 
 // hitShip is the ship that was hit (null if no ship was hit),
 // sunk is if the hit ship was sunk
 Gameboard.prototype.receiveAttack = function(pos) {
-    if (this.shots.find((shot) => Vec.equal(shot.pos, pos))) {
+    if (this.shots.find((shot) => Vec.equal(shot.pos, pos)) !== undefined) {
         throw new Error("Tried to attack the same square again")
     }
 
@@ -69,6 +69,26 @@ Gameboard.prototype.receiveAttack = function(pos) {
         }
     })
     this.shots.push({pos: pos, hit: result.hit})
+    return result
+}
+
+// Same as receiveAttack, but doesn't update the board's state
+// Its return object includes a legal field, instead of throwing an error
+// legal is false if the square is off the board, or has already been guessed
+Gameboard.prototype.dryFire = function(pos) {
+    let result = {legal: true, hit: false, hitShip: null, sunk: false}
+    result.legal = Vec.inBounds(pos, [0, 0], [this.width, this.height])
+    if (this.shots.find((shot) => Vec.equal(shot.pos, pos)) !== undefined) {
+        result.legal = false
+    }
+
+    this.ships.forEach((s) => {
+        if (this.shotHits(pos, s)) {
+            result.hit = true
+            result.hitShip = s
+            result.sunk = s.wouldBeSunk()
+        }
+    })
     return result
 }
 

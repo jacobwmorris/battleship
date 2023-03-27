@@ -1,19 +1,41 @@
 const Vec = require("./Vec")
+const SmartGuesser = require("./SmartGuesser")
 
 function Player(name, num, isCpu) {
     this.name = name
     this.num = num
     this.isCpu = isCpu
+    this.guessGenerator = null
+    if (isCpu)
+        this.guessGenerator = new SmartGuesser(this.guessRandom)
 }
 
 Player.prototype.reset = function(name, num, isCpu) {
     this.name = name
     this.num = num
     this.isCpu = isCpu
+    this.guessGenerator = null
+    if (isCpu)
+        this.guessGenerator = new SmartGuesser(this.guessRandom)
 }
 
 Player.prototype.cpuTurn = function(targetBoard) {
-    return {player: this, pos: this.guessRandom(targetBoard)}
+    const turn = {player: this}
+    if (this.guessGenerator === null) {
+        turn.pos = this.guessRandom(targetBoard)
+        return turn
+    }
+    
+    // If the smart guesser gets stuck, just unstick it.
+    // It will go back to making random guesses
+    try {
+        turn.pos = this.guessGenerator.guess(targetBoard)
+    }
+    catch (err) {
+        this.guessGenerator.reset()
+        turn.pos = this.guessGenerator.guess(targetBoard)
+    }
+    return turn
 }
 
 //Helpers

@@ -242,7 +242,7 @@ Gamedata.prototype.doPlayerAttack = function(turn, player, pos) {
             player.num
             )
         if (result.sunk) {
-            this.messages.receiveMessage(`The oppenent's ${result.hitShip.name} is sunk!`, player.num)
+            this.messages.receiveMessage(`The opponent's ${result.hitShip.name} is sunk!`, player.num)
         }
         success = true
     }
@@ -267,7 +267,7 @@ Gamedata.prototype.doCpuAttack = function() {
         cpuMove.player.num
         )
     if (result.sunk) {
-        this.messages.receiveMessage(`The oppenent's ${result.hitShip.name} is sunk!`, cpuMove.player.num)
+        this.messages.receiveMessage(`The opponent's ${result.hitShip.name} is sunk!`, cpuMove.player.num)
     }
 }
 
