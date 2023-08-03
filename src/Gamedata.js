@@ -408,6 +408,7 @@ Gamedata.prototype.beginShipPlacement = function() {
     this.whosTurn = 1
     this.shipPlacer.reset()
     this.shipPlacer.placeNext()
+    this.messages.receiveMessage("Click on your board to place your ship.  You can press R to rotate it.")
     this.messages.receiveMessage(`${this.player1.name}, place your ${this.shipPlacer.ship.name}.`, this.whosTurn)
 }
 
